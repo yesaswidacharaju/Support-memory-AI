@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Support Memory Agent"
+description = "A focused customer support prototype that demonstrates how Hindsight-style memory lets an AI agent use a customer's previous troubleshooting context in a later conversation."
+version = "1.0.0"
+id = "artifacts/support-memory-agent"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22431
+
+[services.development]
+run = "pnpm --filter @workspace/support-memory-agent run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/support-memory-agent", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/support-memory-agent/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22431"
+BASE_PATH = "/"
