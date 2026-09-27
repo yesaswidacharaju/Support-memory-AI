@@ -4,7 +4,6 @@ import {
   BrainCircuit,
   Check,
   CheckCircle2,
-  ChevronRight,
   Clock3,
   LockKeyhole,
   MessageCircle,
@@ -56,13 +55,13 @@ const returnMessages: Message[] = [
   {
     id: 'return-1',
     author: 'ravi',
-    text: 'Hi again — the application is crashing again when I open a project.',
+    text: 'My application is crashing again.',
     time: '09:42 AM',
   },
   {
     id: 'return-2',
     author: 'agent',
-    text: "I remember your previous issue. You were using Windows 11 with version 5.2, and updating the application resolved the previous crash. Let's check whether the same issue is occurring.",
+    text: "Welcome back, Ravi. I remember that you're using Windows 11 with app version 5.2. You previously resolved a similar crash by updating the application. Let's check whether the same issue is occurring.",
     time: '09:43 AM',
     highlight: 'Replied with remembered context',
   },
@@ -70,8 +69,15 @@ const returnMessages: Message[] = [
 
 const memoryItems: MemoryItem[] = [
   { id: 'os', label: 'Environment', text: 'Windows 11' },
-  { id: 'version', label: 'App version', text: 'Version 5.2' },
-  { id: 'resolution', label: 'Prior resolution', text: 'Updating the app resolved the previous crash' },
+  { id: 'version', label: 'App version', text: 'App version 5.2' },
+  { id: 'previous-crash', label: 'Issue history', text: 'Previous crash occurred' },
+  { id: 'resolution', label: 'Prior resolution', text: 'Updating the app fixed the previous crash' },
+];
+
+const timelineEntries = [
+  { period: 'Today', items: ['Application crash reported'] },
+  { period: '2 weeks ago', items: ['Login issue', 'Password reset solved it'] },
+  { period: '1 month ago', items: ['Payment issue', 'Payment method updated'] },
 ];
 
 function Sidebar({
@@ -88,8 +94,8 @@ function Sidebar({
           <BrainCircuit size={18} strokeWidth={2.2} />
         </div>
         <div>
-          <div className="brand-name">Support Memory</div>
-          <div className="brand-subtitle">AGENT WORKSPACE</div>
+          <div className="brand-name">SupportMemory AI</div>
+          <div className="brand-subtitle">MEMORY-POWERED SUPPORT</div>
         </div>
       </div>
 
@@ -149,13 +155,11 @@ function MemoryPanel({
   captured,
   capturing,
   session,
-  onCapture,
   onReturn,
 }: {
   captured: boolean;
   capturing: boolean;
   session: Session;
-  onCapture: () => void;
   onReturn: () => void;
 }) {
   return (
@@ -164,11 +168,11 @@ function MemoryPanel({
         <div className="memory-title">
           <div className="memory-icon" aria-hidden="true"><BrainCircuit size={16} /></div>
           <div>
-            <h2 id="memory-title">Hindsight memory</h2>
+            <h2 id="memory-title">Hindsight Memory</h2>
             <p>Customer context worth keeping</p>
           </div>
         </div>
-        <span className="memory-count" data-testid="text-memory-count">{captured ? '03 facts' : '0 facts'}</span>
+        <span className="memory-count" data-testid="text-memory-count">{captured ? '04 facts' : '0 facts'}</span>
       </div>
 
       <p className="memory-intro">
@@ -190,43 +194,35 @@ function MemoryPanel({
           </div>
           <div className="capture-banner" data-testid="status-memory-captured">
             <CheckCircle2 size={15} />
-            <div><strong>Memory captured</strong>These facts are ready to support Ravi&apos;s next visit.</div>
+            <div><strong>Memory saved automatically</strong>These facts are ready to support Ravi&apos;s next visit.</div>
           </div>
         </>
       ) : capturing ? (
         <div className="empty-memory" data-testid="status-memory-capturing">
           <Sparkles size={19} />
-          <strong>Reviewing this conversation</strong>
+          <strong>Saving memory automatically</strong>
           <span>Looking for stable details that can help next time...</span>
         </div>
       ) : (
         <div className="empty-memory" data-testid="status-memory-empty">
           <LockKeyhole size={18} />
-          <strong>No memory saved yet</strong>
-          <span>Capture the three useful facts found in this conversation.</span>
+          <strong>Memory saves automatically</strong>
+          <span>Useful facts will appear here as they are identified.</span>
         </div>
       )}
 
       {session === 'initial' ? (
         <div className="next-visit-card">
           <div className="next-visit-copy">
-            <strong>{captured ? 'Ready for a return visit?' : 'Make this conversation useful'}</strong>
-            <span>{captured ? 'See how context changes the next reply.' : 'Save facts Ravi should not have to repeat.'}</span>
+            <strong>{captured ? 'Ready for a return visit?' : 'Memory will be ready for the next visit'}</strong>
+            <span>{captured ? 'See how context changes the next reply.' : 'Useful facts are being saved automatically.'}</span>
           </div>
           {captured ? (
             <button className="primary-action" onClick={onReturn} data-testid="button-advance-return" type="button">
               Continue <ArrowRight size={13} />
             </button>
           ) : (
-            <button
-              className="primary-action"
-              onClick={onCapture}
-              disabled={capturing}
-              data-testid="button-capture-memory"
-              type="button"
-            >
-              Capture facts <ChevronRight size={13} />
-            </button>
+            <span className="auto-save-label">Saving automatically</span>
           )}
         </div>
       ) : (
@@ -236,6 +232,62 @@ function MemoryPanel({
         </div>
       )}
     </section>
+  );
+}
+
+function MemoryTimeline() {
+  return (
+    <section className="timeline-panel" aria-labelledby="timeline-title">
+      <div className="timeline-header">
+        <div className="memory-icon" aria-hidden="true"><Clock3 size={15} /></div>
+        <div>
+          <h2 id="timeline-title">Memory Timeline</h2>
+          <p>Ravi&apos;s support history</p>
+        </div>
+      </div>
+      <div className="timeline-list">
+        {timelineEntries.map((entry) => (
+          <div className="timeline-group" key={entry.period}>
+            <div className="timeline-period">{entry.period}</div>
+            <div className="timeline-items">
+              {entry.items.map((item, index) => (
+                <div className={`timeline-item ${index === 0 ? 'root' : 'nested'}`} key={item}>
+                  <span className="timeline-branch" aria-hidden="true">└─</span>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="preference-block">
+        <div className="timeline-period">Customer preferences</div>
+        <div className="timeline-item root"><span className="timeline-branch" aria-hidden="true">└─</span><span>Windows 11</span></div>
+        <div className="timeline-item root"><span className="timeline-branch" aria-hidden="true">└─</span><span>App v5.2</span></div>
+      </div>
+    </section>
+  );
+}
+
+function MemoryUsedIndicator({ visible }: { visible: boolean }) {
+  if (!visible) return null;
+  const retrievedFacts = ['Previous crash', 'Windows 11', 'App v5.2', 'Previous successful solution'];
+
+  return (
+    <div className="memory-used" data-testid="status-memory-used">
+      <div className="memory-used-heading">
+        <div className="memory-icon" aria-hidden="true"><BrainCircuit size={15} /></div>
+        <div>
+          <strong>Memory used: 4 relevant memories</strong>
+          <span>4 relevant memories retrieved</span>
+        </div>
+      </div>
+      <div className="retrieved-facts">
+        {retrievedFacts.map((fact) => (
+          <span key={fact}><Check size={12} />{fact}</span>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -257,6 +309,19 @@ function App() {
   useEffect(() => () => {
     if (timerRef.current) window.clearTimeout(timerRef.current);
   }, []);
+
+  useEffect(() => {
+    if (session !== 'initial' || captured || capturing) return;
+    const autoStartTimer = window.setTimeout(() => {
+      setCapturing(true);
+      timerRef.current = window.setTimeout(() => {
+        setCaptured(true);
+        setCapturing(false);
+      }, 850);
+    }, 180);
+
+    return () => window.clearTimeout(autoStartTimer);
+  }, [session, captured, capturing]);
 
   const resetDemo = () => {
     if (timerRef.current) window.clearTimeout(timerRef.current);
@@ -343,11 +408,16 @@ function App() {
 
         <div className="workspace-content">
           <section className="conversation-column" aria-labelledby="conversation-title">
+            <div className="product-intro">
+              <div className="product-kicker"><BrainCircuit size={14} /> AI memory for support teams</div>
+              <h2>SupportMemory AI</h2>
+              <div className="product-subtitle">Memory-powered Customer Support Agent</div>
+              <p>Support gets better when the customer is remembered.</p>
+            </div>
             <div className="eyebrow">Selected customer</div>
             <div className="conversation-heading">
               <div>
                 <h1 id="conversation-title">Ravi Kumar</h1>
-                <p>Support gets better when the person behind the ticket is remembered.</p>
               </div>
               <div className="visit-switcher" role="tablist" aria-label="Conversation visit">
                 <button
@@ -376,7 +446,7 @@ function App() {
             <div className="progress-line" data-testid="status-demo-progress">
               <span>{session === 'initial' ? '01' : '02'} / 02</span>
               <div className="progress-track"><div className={`progress-fill ${session === 'return' ? 'complete' : ''}`} /></div>
-              <span>{session === 'initial' ? 'Capture the context' : 'Use the context'}</span>
+              <span>{session === 'initial' ? 'Memory saves automatically' : 'Use the context'}</span>
             </div>
 
             <div className="chat-card">
@@ -388,6 +458,7 @@ function App() {
                 <div className="channel-label"><span className="channel-dot" /> Live chat</div>
               </div>
               <div className="message-list" aria-live="polite">
+                <MemoryUsedIndicator visible={session === 'return'} />
                 <div className="day-divider">{session === 'initial' ? 'Today · First conversation' : 'Today · Return visit'}</div>
                 {messages.map((message) => <MessageBubble key={message.id} message={message} />)}
                 {isTyping ? (
@@ -432,13 +503,15 @@ function App() {
             </div>
           </section>
 
-          <MemoryPanel
-            captured={captured}
-            capturing={capturing}
-            session={session}
-            onCapture={captureMemory}
-            onReturn={advanceToReturn}
-          />
+          <aside className="right-rail">
+            <MemoryPanel
+              captured={captured}
+              capturing={capturing}
+              session={session}
+              onReturn={advanceToReturn}
+            />
+            <MemoryTimeline />
+          </aside>
         </div>
       </div>
     </main>
